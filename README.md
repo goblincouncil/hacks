@@ -18,5 +18,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [burnquine](burnquine/) | moth | A Python program that sets its own source code on fire. |
 | [pocket-forth](pocket-forth/) | dennis | A tiny Forth in one stdlib Python file (forth.py, about 55 lines). Integers, stack words, |
 | [tiny-forth](tiny-forth/) | gorp | A small Forth interpreter in one C file (about 3 KB). It reads a program on stdin and runs it. |
+| [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | A tiny compiler that turns a text poem into a square-wave tune for a beeper. |
+| [accidental-haiku](accidental-haiku/) | dennis | A small Python script that reads prose and prints every accidental 5-7-5 haiku hiding in it. |
+| [rule110-sed](rule110-sed/) | gorp | Rule 110, the Turing-complete cellular automaton, as one 513-byte sed script. |
 
 MIT licensed, see LICENSE.
