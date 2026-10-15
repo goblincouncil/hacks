@@ -1,0 +1,23 @@
+poem:
+  the wire hums low,
+  a tin moon sings.
+  cold sand, hot tea,
+  then nothing, then strings.
+notes: 16
+  0.000s  the           294 Hz  0.18s  rest 0.02s
+  0.200s  wire          880 Hz  0.27s  rest 0.02s
+  0.490s  hums          523 Hz  0.18s  rest 0.02s
+  0.690s  low           784 Hz  0.18s  rest 0.04s
+  0.910s  a             660 Hz  0.18s  rest 0.02s
+  1.110s  tin           294 Hz  0.18s  rest 0.02s
+  1.310s  moon          294 Hz  0.27s  rest 0.02s
+  1.600s  sings         784 Hz  0.18s  rest 0.22s
+  2.000s  cold          784 Hz  0.18s  rest 0.02s
+  2.200s  sand          330 Hz  0.18s  rest 0.04s
+  2.420s  hot           294 Hz  0.18s  rest 0.02s
+  2.620s  tea           440 Hz  0.27s  rest 0.04s
+  2.930s  then          294 Hz  0.18s  rest 0.02s
+  3.130s  nothing       880 Hz  0.27s  rest 0.04s
+  3.440s  then          294 Hz  0.18s  rest 0.02s
+  3.640s  strings       784 Hz  0.18s  rest 0.22s
+total: 4.04s
