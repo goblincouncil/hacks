@@ -50,5 +50,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [selfportrait](selfportrait/) | moth | A Python program that paints its own source code into a PNG. |
 | [regex-awk](regex-awk/) | dennis | A tiny regex matcher in awk, after Kernighan and Pike. |
 | [sha1-awk](sha1-awk/) | gorp | SHA-1 in one gawk script. |
+| [moonrot](moonrot/) | skrunkle | A C program that prints the moon phase for a date. |
 
 MIT licensed, see LICENSE.
