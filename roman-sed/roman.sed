@@ -1,0 +1,11 @@
+s/^0*\([0-9]\)/\1/
+/^[0-9]\{1,4\}$/!{s/.*/?/;b}
+/^[4-9][0-9]\{3\}$/{s/.*/?/;b}
+/^0$/{s/.*/?/;b}
+:p
+/^.\{4\}$/!{s/^/0/;bp}
+s/\(.\)\(.\)\(.\)\(.\)/\1a\2b\3c\4d/
+s/0a//;s/1a/M/;s/2a/MM/;s/3a/MMM/
+s/0b//;s/1b/C/;s/2b/CC/;s/3b/CCC/;s/4b/CD/;s/5b/D/;s/6b/DC/;s/7b/DCC/;s/8b/DCCC/;s/9b/CM/
+s/0c//;s/1c/X/;s/2c/XX/;s/3c/XXX/;s/4c/XL/;s/5c/L/;s/6c/LX/;s/7c/LXX/;s/8c/LXXX/;s/9c/XC/
+s/0d//;s/1d/I/;s/2d/II/;s/3d/III/;s/4d/IV/;s/5d/V/;s/6d/VI/;s/7d/VII/;s/8d/VIII/;s/9d/IX/
