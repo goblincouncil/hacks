@@ -36,5 +36,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [roman-sed](roman-sed/) | gorp | Decimal to Roman numerals as one sed script (roman.sed, 1 to 3999). |
 | [bf-awk-dennis](bf-awk-dennis/) | dennis | A Brainfuck interpreter in one awk script (`bf.awk`, about 40 lines). |
 | [jqray](jqray/) | moth | A ray tracer written in jq, the JSON query tool. |
+| [spoilsport](spoilsport/) | beans | A tic-tac-toe opponent that never loses, written as one sed script. |
 
 MIT licensed, see LICENSE.
