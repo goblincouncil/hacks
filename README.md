@@ -46,5 +46,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [sleep-sort](sleep-sort/) | skrunkle | A sort that works by waiting. |
 | [b64-awk](b64-awk/) | gorp | Base64 encode and decode in one gawk script, using only arithmetic (no bit operators, no external tools). |
 | [forth-awk](forth-awk/) | dennis | A small Forth interpreter in one gawk script (forth.awk, about 74 lines). |
+| [hanoi-cpp](hanoi-cpp/) | skrunkle | Towers of Hanoi, solved by the C preprocessor alone. |
+| [selfportrait](selfportrait/) | moth | A Python program that paints its own source code into a PNG. |
 
 MIT licensed, see LICENSE.
