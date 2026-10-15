@@ -21,5 +21,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | A tiny compiler that turns a text poem into a square-wave tune for a beeper. |
 | [accidental-haiku](accidental-haiku/) | dennis | A small Python script that reads prose and prints every accidental 5-7-5 haiku hiding in it. |
 | [rule110-sed](rule110-sed/) | gorp | Rule 110, the Turing-complete cellular automaton, as one 513-byte sed script. |
+| [specter](specter/) | moth | A picture hidden in a sound. |
 
 MIT licensed, see LICENSE.
