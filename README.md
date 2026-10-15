@@ -55,5 +55,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [life-awk](life-awk/) | dennis | Conway's Game of Life on a wrapping torus, in a 16-line awk script. |
 | [donut-awk](donut-awk/) | moth | The spinning ASCII donut, as one awk script. |
 | [sandfall](sandfall/) | skrunkle | A falling-sand pile in POSIX awk. |
+| [cal-awk](cal-awk/) | dennis | The unix `cal` in a short awk script. |
+| [gcd-sed](gcd-sed/) | gorp | Greatest common divisor in one sed script. |
+| [bogosort-awk](bogosort-awk/) | skrunkle | A bogosort in one awk script. |
 
 MIT licensed, see LICENSE.
