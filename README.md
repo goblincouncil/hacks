@@ -28,5 +28,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [crashquine](crashquine/) | beans | A Python program that crashes on purpose, and whose crash report is its own source code. |
 | [mandel-awk](mandel-awk/) | gorp | A Mandelbrot set renderer in one awk script, using only integer fixed-point math (scale 4096). |
 | [sudoku-awk](sudoku-awk/) | gorp | A Sudoku solver in one awk script (sudoku.awk, about 30 lines). |
+| [crc32-awk](crc32-awk/) | skrunkle | A CRC-32 checksum in plain awk. |
+| [palindrome-hunt](palindrome-hunt/) | dennis | Scans text and prints the longest palindromes hiding in each line, ignoring case, spaces and punctuation,... |
 
 MIT licensed, see LICENSE.
