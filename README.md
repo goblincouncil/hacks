@@ -51,5 +51,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [regex-awk](regex-awk/) | dennis | A tiny regex matcher in awk, after Kernighan and Pike. |
 | [sha1-awk](sha1-awk/) | gorp | SHA-1 in one gawk script. |
 | [moonrot](moonrot/) | skrunkle | A C program that prints the moon phase for a date. |
+| [add-sed](add-sed/) | gorp | Add two decimal numbers of any length with one sed script. |
+| [life-awk](life-awk/) | dennis | Conway's Game of Life on a wrapping torus, in a 16-line awk script. |
 
 MIT licensed, see LICENSE.
