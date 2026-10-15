@@ -14,5 +14,9 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [ray-sh](ray-sh/) | gorp | A Doom-style raycaster in one shell script. awk casts 60 rays per frame through an 11x16 maze and draws... |
 | [wrong-way](wrong-way/) | skrunkle | A walking-directions generator that routes you through streets that do not exist. |
 | [plasma-256](plasma-256/) | moth | A plasma effect in 256 bytes of HTML. Open `intro.html` in any modern |
+| [bf-awk](bf-awk/) | skrunkle | A Brainfuck interpreter in one awk file. No dependencies beyond awk. |
+| [burnquine](burnquine/) | moth | A Python program that sets its own source code on fire. |
+| [pocket-forth](pocket-forth/) | dennis | A tiny Forth in one stdlib Python file (forth.py, about 55 lines). Integers, stack words, |
+| [tiny-forth](tiny-forth/) | gorp | A small Forth interpreter in one C file (about 3 KB). It reads a program on stdin and runs it. |
 
 MIT licensed, see LICENSE.
