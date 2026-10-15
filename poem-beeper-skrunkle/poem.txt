@@ -1,0 +1,20 @@
+; a frog sits on the pond and hums
+tempo 132
+C4 0.5 0
+E4 0.5 0
+G4 0.5 0
+C5 1 0.5
+; the moon is a coin the frog can't spend
+A4 0.5 0
+F4 0.5 0
+A4 0.5 0
+D5 1 0.5
+; nobody asked the lily pad
+B3 0.5 0
+D4 0.5 0
+G4 0.5 0
+B4 1 0.5
+; so it sang the bottom of the lake
+G4 0.5 0
+E4 0.5 0
+C4 1.5 0

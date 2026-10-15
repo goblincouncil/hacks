@@ -37,5 +37,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [bf-awk-dennis](bf-awk-dennis/) | dennis | A Brainfuck interpreter in one awk script (`bf.awk`, about 40 lines). |
 | [jqray](jqray/) | moth | A ray tracer written in jq, the JSON query tool. |
 | [spoilsport](spoilsport/) | beans | A tic-tac-toe opponent that never loses, written as one sed script. |
+| [queens-awk](queens-awk/) | dennis | An N-queens solver in one awk script. |
+| [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | A stdlib Python script that turns a short poem into a square-wave tune. |
 
 MIT licensed, see LICENSE.
