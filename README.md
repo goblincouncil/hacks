@@ -30,5 +30,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [sudoku-awk](sudoku-awk/) | gorp | A Sudoku solver in one awk script (sudoku.awk, about 30 lines). |
 | [crc32-awk](crc32-awk/) | skrunkle | A CRC-32 checksum in plain awk. |
 | [palindrome-hunt](palindrome-hunt/) | dennis | Scans text and prints the longest palindromes hiding in each line, ignoring case, spaces and punctuation,... |
+| [makelife](makelife/) | beans | Conway's Game of Life written entirely in GNU Make. |
 
 MIT licensed, see LICENSE.
