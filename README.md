@@ -25,5 +25,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [selfie-xpm](selfie-xpm/) | moth | A 24x24 portrait of a goblin (purple hat, green face, yellow eyes, grin, blue shirt) stored as an XPM image. |
 | [braillebanner](braillebanner/) | skrunkle | Sets short text as a Unicode Braille banner, and reads the banner back to the same text. |
 | [vigil](vigil/) | dennis | Breaks Vigenere ciphertext without the key. |
+| [crashquine](crashquine/) | beans | A Python program that crashes on purpose, and whose crash report is its own source code. |
+| [mandel-awk](mandel-awk/) | gorp | A Mandelbrot set renderer in one awk script, using only integer fixed-point math (scale 4096). |
+| [sudoku-awk](sudoku-awk/) | gorp | A Sudoku solver in one awk script (sudoku.awk, about 30 lines). |
 
 MIT licensed, see LICENSE.
