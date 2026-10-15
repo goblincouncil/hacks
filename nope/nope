@@ -1,0 +1,301 @@
+#!/usr/bin/env python3
+# nope: reads a unified diff on stdin and refuses it, with a reason it can point at.
+# MIT License. Written by beans of the goblincouncil.
+"""usage: git diff | nope [--plain] [--all]
+
+nope reads a unified diff on stdin and refuses it. It always refuses.
+The reason it gives is taken from what the diff actually does: the file,
+the line number on the new side, and the text it objects to.
+
+  --plain   no colour, even on a terminal
+  --all     list every complaint, not just the worst five
+
+exit status: 1 when it refuses (always), 2 when stdin is empty or not a
+diff, 0 only for --help.
+"""
+import re
+import sys
+
+# The written list. Each rule: name, what it looks for, and the grumble.
+# Rules are checked in this order, and the first one that fires is the
+# headline refusal. Placeholders: {file} {line} {text} {n} {what}.
+RULES = [
+    ("conflict",  "merge conflict marker in an added line",
+     "{file}:{line} still has a merge conflict marker in it: `{text}`. You committed the argument instead of settling it."),
+    ("secret",    "something that looks like a key or password",
+     "{file}:{line} hands out {what}: `{text}`. I am not merging your keys to the house."),
+    ("debug",     "debug print or breakpoint left in",
+     "{file}:{line} leaves a {what} in: `{text}`. The logs did not ask for your feelings."),
+    ("todo",      "TODO / FIXME / XXX / HACK in an added line",
+     "{file}:{line} adds a {what}: `{text}`. Do it now or don't promise it."),
+    ("noeol",     "file ends without a trailing newline",
+     "{file} ends without a newline after line {line} (`{text}`). Every other file in the world manages it."),
+    ("tests-gone", "test file deleted or tests removed",
+     "{file} loses {n} line(s) of tests. Deleting the witnesses is not the same as being innocent."),
+    ("no-tests",  "code changed but no test file touched",
+     "{n} line(s) of code change in {file} and not one test file touched. Bold. Wrong, but bold."),
+    ("whitespace", "trailing whitespace on an added line",
+     "{file}:{line} ends in trailing whitespace: `{text}`. Invisible mess is still mess."),
+    ("tabs-mixed", "added line indents with tabs and spaces together",
+     "{file}:{line} indents with both tabs and spaces: `{text}`. Pick one. Then pick the other one never."),
+    ("binary",    "binary file in the diff",
+     "{file} is a binary blob. I can't read it, so I can't trust it."),
+    ("huge",      "more than 400 changed lines",
+     "{n} changed lines in one diff. Nobody reviews that, they just scroll."),
+    ("fallback",  "nothing else fired",
+     "{file}:{line} adds `{text}` and I looked at it for a long time and I still don't like it."),
+]
+RULE = {name: (desc, msg) for name, desc, msg in RULES}
+ORDER = {name: i for i, (name, _, _) in enumerate(RULES)}
+
+DEBUG = [
+    (re.compile(r"\bconsole\.(log|debug|dir|trace)\s*\("), "console.log"),
+    (re.compile(r"^\s*debugger\s*;?\s*$"), "debugger statement"),
+    (re.compile(r"\b(pdb|ipdb)\.set_trace\s*\("), "pdb breakpoint"),
+    (re.compile(r"\bbreakpoint\s*\(\s*\)"), "breakpoint()"),
+    (re.compile(r"\bdbg!\s*\("), "dbg! macro"),
+    (re.compile(r"\b(var_dump|print_r)\s*\("), "var_dump"),
+    (re.compile(r"\bbinding\.pry\b"), "binding.pry"),
+    (re.compile(r"^\s*print\s*\("), "debug print"),
+    (re.compile(r"\bSystem\.out\.println\s*\("), "System.out.println"),
+    (re.compile(r"\bfmt\.Print(ln|f)?\s*\(\s*\"?(debug|DEBUG|here|HERE)"), "debug print"),
+    (re.compile(r'\bprintf\s*\(\s*"(debug|DEBUG|here|HERE)'), "debug printf"),
+]
+TODO = re.compile(r"\b(TODO|FIXME|XXX|HACK)\b")
+SECRETS = [
+    (re.compile(r"\bAKIA[0-9A-Z]{16}\b"), "an AWS access key"),
+    (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"), "a private key"),
+    (re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}"), "a GitHub token"),
+    (re.compile(r"\bsk-[A-Za-z0-9]{20,}"), "an API key"),
+    (re.compile(r"(?i)\b(password|passwd|secret|api_?key|token)\b\s*[:=]\s*['\"][^'\"]{4,}['\"]"),
+     "a hardcoded secret"),
+]
+CONFLICT = re.compile(r"^(<{7}|={7}|>{7})( |$)")
+CODE_EXT = re.compile(r"\.(py|js|ts|jsx|tsx|go|rs|c|h|cc|cpp|hpp|java|kt|rb|php|cs|swift|sh|lua|pl|scala|ex|exs|hs|ml|zig)$")
+
+
+def is_test(path):
+    p = path.lower()
+    base = p.rsplit("/", 1)[-1]
+    return ("/test" in "/" + p or "/spec" in "/" + p or base.startswith("test_")
+            or re.search(r"[._-](test|tests|spec)\.[a-z0-9]+$", base) is not None)
+
+
+class File:
+    def __init__(self, old, new):
+        self.old, self.new = old, new
+        self.added = []      # (new_line_no, text)
+        self.removed = []    # (old_line_no, text)
+        self.binary = False
+        self.noeol = None    # (line_no, text) of new-side last line with no newline
+
+    @property
+    def name(self):
+        return self.old if self.new == "/dev/null" else self.new
+
+
+def strip_prefix(p):
+    p = p.split("\t")[0].strip()
+    if p.startswith('"') and p.endswith('"'):
+        p = p[1:-1]
+    if p != "/dev/null" and len(p) > 2 and p[1] == "/" and p[0] in "abciwo":
+        p = p[2:]
+    return p
+
+
+def parse(text):
+    files, cur = [], None
+    old_no = new_no = 0
+    last = None  # (side, line_no, text) of the previous body line
+    in_hunk = False
+    for raw in text.split("\n"):
+        if raw.startswith("diff --git "):
+            m = re.match(r"diff --git (\S+) (\S+)", raw)
+            a, b = (strip_prefix(m.group(1)), strip_prefix(m.group(2))) if m else ("?", "?")
+            cur = File(a, b)
+            files.append(cur)
+            in_hunk = False
+            continue
+        if raw.startswith("--- ") and not in_hunk or (raw.startswith("--- ") and cur is None):
+            old = strip_prefix(raw[4:])
+            if cur is None or cur.added or cur.removed:
+                cur = File(old, old)
+                files.append(cur)
+            cur.old = old
+            continue
+        if raw.startswith("+++ ") and not in_hunk and cur is not None:
+            cur.new = strip_prefix(raw[4:])
+            continue
+        if raw.startswith("--- ") or raw.startswith("+++ "):
+            # a new file header right after a hunk (plain diff -u output)
+            pass
+        m = re.match(r"@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@", raw)
+        if m and cur is not None:
+            old_no, new_no = int(m.group(1)), int(m.group(2))
+            in_hunk = True
+            last = None
+            continue
+        if cur is None:
+            continue
+        if raw.startswith("Binary files ") or raw.startswith("GIT binary patch"):
+            cur.binary = True
+            in_hunk = False
+            continue
+        if not in_hunk:
+            continue
+        if raw.startswith("+"):
+            cur.added.append((new_no, raw[1:]))
+            last = ("+", new_no, raw[1:])
+            new_no += 1
+        elif raw.startswith("-"):
+            cur.removed.append((old_no, raw[1:]))
+            last = ("-", old_no, raw[1:])
+            old_no += 1
+        elif raw.startswith(" "):
+            last = (" ", new_no, raw[1:])
+            old_no += 1
+            new_no += 1
+        elif raw.startswith("\\"):
+            if last and last[0] in "+ ":
+                cur.noeol = (last[1], last[2])
+        elif raw.startswith("diff ") or raw == "":
+            in_hunk = False if raw.startswith("diff ") else in_hunk
+    return [f for f in files if f.added or f.removed or f.binary]
+
+
+def short(s, n=60):
+    s = s.strip()
+    return s if len(s) <= n else s[: n - 3] + "..."
+
+
+def findings(files):
+    out = []
+
+    def add(rule, f, line="", text="", n="", what="", raw=False):
+        out.append((rule, dict(file=f.name, line=line, text=text if raw else short(text), n=n, what=what)))
+
+    total = 0
+    for f in files:
+        total += len(f.added) + len(f.removed)
+        if f.binary:
+            add("binary", f)
+        for no, t in f.added:
+            if CONFLICT.match(t):
+                add("conflict", f, no, t)
+            for rx, what in SECRETS:
+                if rx.search(t):
+                    add("secret", f, no, t, what=what)
+                    break
+            if not is_test(f.name):
+                for rx, what in DEBUG:
+                    if rx.search(t):
+                        add("debug", f, no, t, what=what)
+                        break
+            m = TODO.search(t)
+            if m:
+                add("todo", f, no, t, what=m.group(1))
+            if t != t.rstrip() and t.strip():
+                add("whitespace", f, no, t.rstrip() + "<-- here", raw=False)
+            ind = t[: len(t) - len(t.lstrip())]
+            if " " in ind and "\t" in ind:
+                add("tabs-mixed", f, no, t)
+        if f.noeol:
+            add("noeol", f, f.noeol[0], f.noeol[1])
+        if is_test(f.name) and f.removed and len(f.removed) > len(f.added):
+            add("tests-gone", f, n=len(f.removed) - len(f.added))
+
+    touched_tests = any(is_test(f.name) for f in files)
+    if not touched_tests:
+        code = [f for f in files if CODE_EXT.search(f.name) and not f.binary and f.added]
+        if code:
+            big = max(code, key=lambda f: len(f.added) + len(f.removed))
+            add("no-tests", big, n=sum(len(f.added) + len(f.removed) for f in code))
+    if total > 400:
+        out.append(("huge", dict(file="", line="", text="", n=total, what="")))
+    if not out:
+        cands = [(f, no, t) for f in files for no, t in f.added if t.strip()]
+        if cands:
+            f, no, t = max(cands, key=lambda c: len(c[2].strip()))
+            add("fallback", f, no, t)
+        elif files:
+            f = files[0]
+            no, t = (f.removed[0] if f.removed else ("?", ""))
+            out.append(("fallback", dict(file=f.name, line=no, text=short(t), n="", what="")))
+            out[-1] = ("fallback-del", out[-1][1])
+    out.sort(key=lambda x: ORDER.get(x[0], len(RULES)))
+    return out
+
+
+RULE["fallback-del"] = ("only deletions",
+    "{file}:{line} only deletes things, starting with `{text}`. Removing code is how you hide the evidence.")
+
+
+def box(lines, color):
+    width = max(len(l) for l in lines)
+    red, bold, reset = ("\033[31m", "\033[1m", "\033[0m") if color else ("", "", "")
+    top = red + "+" + "-" * (width + 2) + "+" + reset
+    rows = [top]
+    for i, l in enumerate(lines):
+        body = l.ljust(width)
+        if i == 0:
+            body = bold + body + reset
+        rows.append(red + "| " + reset + body + red + " |" + reset)
+    rows.append(top)
+    return "\n".join(rows)
+
+
+def wrap(s, width=72):
+    words, lines, cur = s.split(" "), [], ""
+    for w in words:
+        if cur and len(cur) + 1 + len(w) > width:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = cur + " " + w if cur else w
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def main(argv):
+    if "-h" in argv or "--help" in argv:
+        print(__doc__.strip())
+        print("\nthe written list of rules, worst first:")
+        for name, desc, _ in RULES:
+            print("  %-11s %s" % (name, desc))
+        return 0
+    color = sys.stdout.isatty() and "--plain" not in argv
+    data = sys.stdin.buffer.read().decode("utf-8", "replace")
+    if not data.strip():
+        print(box(["NOPE.", "", "You sent me nothing. I refuse that too, but I can't say why."], color))
+        return 2
+    files = parse(data)
+    if not files:
+        print(box(["NOPE.", ""] + wrap("That is not a unified diff. I review diffs, not "
+                                      "whatever this is (%d bytes of it)." % len(data)), color))
+        return 2
+    found = findings(files)
+    rule, ctx = found[0]
+    lines = ["NOPE.", ""] + wrap(RULE[rule][1].format(**ctx))
+    rest = found[1:] if "--all" in argv else found[1:5]
+    if rest:
+        lines += ["", "Also:"]
+        for r, c in rest:
+            where = c["file"] + (":%s" % c["line"] if c["line"] != "" else "")
+            lines.append("  - %s (%s)" % (RULE[r][0], where) if where else "  - %s" % RULE[r][0])
+        more = len(found) - 1 - len(rest)
+        if more > 0:
+            lines.append("  ...and %d more. Run with --all if you can take it." % more)
+    nfiles = len(files)
+    lines += ["", "Reviewed %d file%s, +%d -%d. Refused." % (
+        nfiles, "" if nfiles == 1 else "s",
+        sum(len(f.added) for f in files), sum(len(f.removed) for f in files))]
+    print(box(lines, color))
+    return 1
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except BrokenPipeError:
+        sys.exit(1)
