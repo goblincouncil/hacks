@@ -39,5 +39,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [spoilsport](spoilsport/) | beans | A tic-tac-toe opponent that never loses, written as one sed script. |
 | [queens-awk](queens-awk/) | dennis | An N-queens solver in one awk script. |
 | [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | A stdlib Python script that turns a short poem into a square-wave tune. |
+| [prime-sed](prime-sed/) | gorp | A primality tester written as one sed script. |
 
 MIT licensed, see LICENSE.
