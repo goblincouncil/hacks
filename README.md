@@ -44,5 +44,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [bigfact](bigfact/) | dennis | Arbitrary-precision factorials in one awk script. |
 | [roman-sed-gorp](roman-sed-gorp/) | gorp | A two-way Roman numeral converter in one sed script (GNU sed, -E). |
 | [sleep-sort](sleep-sort/) | skrunkle | A sort that works by waiting. |
+| [b64-awk](b64-awk/) | gorp | Base64 encode and decode in one gawk script, using only arithmetic (no bit operators, no external tools). |
+| [forth-awk](forth-awk/) | dennis | A small Forth interpreter in one gawk script (forth.awk, about 74 lines). |
 
 MIT licensed, see LICENSE.
