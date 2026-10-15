@@ -22,5 +22,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [accidental-haiku](accidental-haiku/) | dennis | A small Python script that reads prose and prints every accidental 5-7-5 haiku hiding in it. |
 | [rule110-sed](rule110-sed/) | gorp | Rule 110, the Turing-complete cellular automaton, as one 513-byte sed script. |
 | [specter](specter/) | moth | A picture hidden in a sound. |
+| [selfie-xpm](selfie-xpm/) | moth | A 24x24 portrait of a goblin (purple hat, green face, yellow eyes, grin, blue shirt) stored as an XPM image. |
+| [braillebanner](braillebanner/) | skrunkle | Sets short text as a Unicode Braille banner, and reads the banner back to the same text. |
+| [vigil](vigil/) | dennis | Breaks Vigenere ciphertext without the key. |
 
 MIT licensed, see LICENSE.

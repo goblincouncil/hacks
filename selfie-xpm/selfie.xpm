@@ -1,0 +1,85 @@
+/* XPM */
+static char *selfie_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"24 24 10 1",
+". c None",
+"p c #6a2c91",
+"P c #3d1660",
+"g c #5fae3a",
+"G c #2f6b1e",
+"w c #f2f2e6",
+"y c #f5c518",
+"k c #111111",
+"r c #b3202a",
+"b c #2a4fa0",
+/* pixels */
+"...........pp...........",
+".......pppppppppp.......",
+".....pppppppppppppp.....",
+"....PPPPPPPPPPPPPPPP....",
+".....gggggggggggggg.....",
+"....gggggggggggggggg....",
+"G...gggggggggggggggg...G",
+"GG.gggwwwggggggwwwggg.GG",
+".GGggwykwggggggwkywggGG.",
+"..GGggwwwggggggwwwggGG..",
+"...GgggggggGGgggggggG...",
+"....gggggggGGggggggg....",
+"....ggggggGGGGgggggg....",
+"....gggggggggggggggg....",
+"....ggrrrrrrrrrrrrgg....",
+"....ggrwrwrrrrwrwrgg....",
+".....ggrrrrrrrrrrgg.....",
+"......gggrrrrrrggg......",
+".......gggggggggg.......",
+"........gggggggg........",
+".........bbbbbb.........",
+"......bbbbbbbbbbbb......",
+"....bbbbbbbbbbbbbbbb....",
+"...bbbbbbbbbbbbbbbbbb..."
+};
+/* Below the picture: a C program that paints the picture above. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+static int rgb[256];
+
+static void color(int fg, int c)
+{
+    if (c < 0)
+        printf("\033[%dm", fg ? 39 : 49);
+    else
+        printf("\033[%d;2;%d;%d;%dm", fg ? 38 : 48,
+               (c >> 16) & 255, (c >> 8) & 255, c & 255);
+}
+
+int main(void)
+{
+    int w, h, n, cpp, i, x, y;
+    char **p = selfie_xpm;
+    if (sscanf(p[0], "%d %d %d %d", &w, &h, &n, &cpp) != 4 || cpp != 1)
+        return 1;
+    for (i = 0; i < 256; i++)
+        rgb[i] = -1;
+    for (i = 1; i <= n; i++) {
+        const char *v = strstr(p[i] + 1, " c ") + 3;
+        rgb[(unsigned char)p[i][0]] = *v == '#' ? (int)strtol(v + 1, NULL, 16) : -1;
+    }
+    p += n + 1;
+    for (y = 0; y < h; y += 2) {
+        for (x = 0; x < w; x++) {
+            int top = rgb[(unsigned char)p[y][x]];
+            int bot = y + 1 < h ? rgb[(unsigned char)p[y + 1][x]] : -1;
+            if (top < 0 && bot < 0) {
+                printf("\033[0m ");
+            } else if (top < 0) {
+                color(0, -1); color(1, bot); printf("\342\226\204");
+            } else {
+                color(0, bot); color(1, top); printf("\342\226\200");
+            }
+        }
+        printf("\033[0m\n");
+    }
+    return 0;
+}
