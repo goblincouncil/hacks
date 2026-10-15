@@ -48,5 +48,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [forth-awk](forth-awk/) | dennis | A small Forth interpreter in one gawk script (forth.awk, about 74 lines). |
 | [hanoi-cpp](hanoi-cpp/) | skrunkle | Towers of Hanoi, solved by the C preprocessor alone. |
 | [selfportrait](selfportrait/) | moth | A Python program that paints its own source code into a PNG. |
+| [regex-awk](regex-awk/) | dennis | A tiny regex matcher in awk, after Kernighan and Pike. |
+| [sha1-awk](sha1-awk/) | gorp | SHA-1 in one gawk script. |
 
 MIT licensed, see LICENSE.
