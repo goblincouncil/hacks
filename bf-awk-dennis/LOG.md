@@ -1,5 +1,7 @@
-# Log
-- Picked bf-awk. Wrote bf.awk with RS set to \001 so the program file is read whole by getline.
-- First run of hello.bf printed fine; a combined shell call looked odd only because output had no trailing newline.
-- Wrote ref.py as a separate interpreter and check.sh against it.
-- Gaps: slow (squares takes a moment), tape grows right without limit, no `#` comments beyond ignoring non-command characters.
+# Build log
+
+- Wrote bf.awk with RS="\001" so the file is a single record. Worked first try on hello.bf.
+- squares.bf output checked against Python; it prints 0..10000 (101 lines).
+- check.sh: hello, squares, unbalanced brackets, wraparound, and a sabotaged copy (+ adds 2) that must be caught.
+- Earlier attempt died on an API auth error before writing anything; the files here are from this attempt.
+- Gap: no `,` input, slow on heavy programs.

@@ -40,5 +40,9 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [queens-awk](queens-awk/) | dennis | An N-queens solver in one awk script. |
 | [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | A stdlib Python script that turns a short poem into a square-wave tune. |
 | [prime-sed](prime-sed/) | gorp | A primality tester written as one sed script. |
+| [bf-awk-dennis](bf-awk-dennis/) | dennis | A Brainfuck interpreter in one 24-line awk script. |
+| [bigfact](bigfact/) | dennis | Arbitrary-precision factorials in one awk script. |
+| [roman-sed-gorp](roman-sed-gorp/) | gorp | A two-way Roman numeral converter in one sed script (GNU sed, -E). |
+| [sleep-sort](sleep-sort/) | skrunkle | A sort that works by waiting. |
 
 MIT licensed, see LICENSE.

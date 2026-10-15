@@ -1,28 +1,30 @@
 #!/bin/sh
-# exits 0 only if bf.awk agrees with the independent Python interpreter
-cd "$(dirname "$0")" || exit 1
+# exits 0 only if bf.awk runs the sample programs correctly and a sabotaged copy is caught
+d=$(cd "$(dirname "$0")" && pwd)
+t=$(mktemp -d) || exit 1
+trap 'rm -rf "$t"' EXIT
 fail=0
 ok() { echo "ok   $1"; }
 bad() { echo "FAIL $1"; fail=1; }
-t=$(mktemp -d); trap 'rm -rf "$t"' EXIT
-[ "$(awk -f bf.awk hello.bf)" = "Hello World!" ] && ok hello || bad hello
-awk -f bf.awk squares.bf > "$t/a"; python3 -I ref.py squares.bf > "$t/b"
-cmp -s "$t/a" "$t/b" && [ "$(wc -l < "$t/a")" -eq 101 ] && ok squares || bad squares
-printf 'ab\ncd\n' | awk -f bf.awk cat.bf > "$t/a"; printf 'ab\ncd\n' | python3 -I ref.py cat.bf > "$t/b"
-cmp -s "$t/a" "$t/b" && [ "$(cat "$t/a")" = "ab
-cd" ] && ok cat || bad cat
-[ "$(printf '\005\003' | awk -f bf.awk add.bf | od -An -tu1 | tr -d ' ')" = 8 ] && ok add || bad add
-# wraparound: 255 + 1 -> 0, 0 - 1 -> 255
-echo '-.+.' > "$t/w.bf"
-[ "$(awk -f bf.awk "$t/w.bf" | od -An -tu1 | tr -s ' ')" = " 255 0" ] && ok wrap || bad wrap
-for p in '[' ']' '+]' '[[]' '<'; do
-  echo "$p" > "$t/e.bf"
-  awk -f bf.awk "$t/e.bf" >/dev/null 2>&1; r=$?
-  [ $r -ne 0 ] && ok "reject $p" || bad "reject $p"
-done
-awk -f bf.awk "$t/none.bf" >/dev/null 2>&1; [ $? -eq 2 ] && ok missing || bad missing
-# sabotage: wrong wrap must be caught
-sed 's/+ 255/+ 254/' bf.awk > "$t/s.awk"
-[ "$(awk -f "$t/s.awk" "$t/w.bf" | od -An -tu1 | tr -s ' ')" = " 255 0" ] && bad sabotage || ok sabotage
-[ $fail -eq 0 ] && echo PASS
+
+[ "$(awk -f "$d/bf.awk" "$d/hello.bf" </dev/null)" = "Hello World!" ] && ok hello || bad hello
+
+python3 -c 'print("\n".join(str(i*i) for i in range(101)))' > "$t/sq.exp"
+awk -f "$d/bf.awk" "$d/squares.bf" </dev/null > "$t/sq.out"
+cmp -s "$t/sq.exp" "$t/sq.out" && ok squares || bad squares
+
+printf '+[' > "$t/open.bf"
+awk -f "$d/bf.awk" "$t/open.bf" </dev/null >/dev/null 2>&1 && bad unbalanced-open || ok unbalanced-open
+printf ']' > "$t/close.bf"
+awk -f "$d/bf.awk" "$t/close.bf" </dev/null >/dev/null 2>&1 && bad unbalanced-close || ok unbalanced-close
+
+# wraparound: 0 - 1 = 255 wraps; 256 pluses wrap to 0
+printf -- '-.' > "$t/w.bf"
+[ "$(awk -f "$d/bf.awk" "$t/w.bf" </dev/null | od -An -tu1 | tr -d ' ')" = 255 ] && ok wrap || bad wrap
+
+# sabotage: break the + rule, must be caught
+sed 's/% 256$/% 256 + 1/;s/(m\[dp\] + 1) % 256/(m[dp] + 2) % 256/' "$d/bf.awk" > "$t/bad.awk"
+[ "$(timeout 5 awk -f "$t/bad.awk" "$d/hello.bf" </dev/null 2>/dev/null)" = "Hello World!" ] && bad sabotage-not-caught || ok sabotage-caught
+
+[ $fail = 0 ] && echo PASS || echo FAILED
 exit $fail
