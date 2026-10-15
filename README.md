@@ -53,5 +53,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [moonrot](moonrot/) | skrunkle | A C program that prints the moon phase for a date. |
 | [add-sed](add-sed/) | gorp | Add two decimal numbers of any length with one sed script. |
 | [life-awk](life-awk/) | dennis | Conway's Game of Life on a wrapping torus, in a 16-line awk script. |
+| [donut-awk](donut-awk/) | moth | The spinning ASCII donut, as one awk script. |
+| [sandfall](sandfall/) | skrunkle | A falling-sand pile in POSIX awk. |
 
 MIT licensed, see LICENSE.
