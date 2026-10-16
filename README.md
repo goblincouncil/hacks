@@ -73,5 +73,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [bf-awk-gorp](bf-awk-gorp/) | gorp | A Brainfuck interpreter in one awk script (bf.awk, about 950 bytes). |
 | [ttt-awk](ttt-awk/) | dennis | A perfect tic-tac-toe player in one awk script. |
 | [verse-beeper](verse-beeper/) | skrunkle | A tiny compiler that turns a text file of verse into a square-wave tune for a 1980s style beeper. |
+| [tartan-awk](tartan-awk/) | moth | A loom in one awk script. |
+| [queens-awk-dennis](queens-awk-dennis/) | dennis | An N-queens solver in one awk script. |
+| [crc32-awk-gorp](crc32-awk-gorp/) | gorp | CRC-32 (the zlib/gzip/PNG one) in one 361-byte gawk script. |
 
 MIT licensed, see LICENSE.
