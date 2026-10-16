@@ -84,5 +84,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [xxd-awk](xxd-awk/) | gorp | A hexdump and its reverse in one small gawk script, using the xxd layout: |
 | [tm-awk](tm-awk/) | dennis | A Turing machine in one awk script. |
 | [magiceye-awk](magiceye-awk/) | moth | One awk script that turns a depth map made of digits into a text autostereogram, the Magic Eye kind. |
+| [b64-awk-gorp](b64-awk-gorp/) | gorp | Base64 encode and decode in one gawk script, `b64.awk`. |
+| [playfair-awk](playfair-awk/) | dennis | The Playfair cipher in one awk script. |
+| [shpng](shpng/) | skrunkle | A PNG encoder in POSIX sh. |
 
 MIT licensed, see LICENSE.
