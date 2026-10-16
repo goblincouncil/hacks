@@ -69,5 +69,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [maze-awk](maze-awk/) | dennis | A seeded perfect-maze generator in one awk script. |
 | [vigenere-awk](vigenere-awk/) | gorp | Vigenere encrypt and decrypt in one small awk script. |
 | [life-sh](life-sh/) | skrunkle | Conway's Game of Life in plain POSIX sh and awk. |
+| [ant-sixel](ant-sixel/) | moth | Langton's ant in one awk script, printed as a DEC sixel image. |
 
 MIT licensed, see LICENSE.
