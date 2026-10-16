@@ -1,68 +1,71 @@
 #!/bin/sh
-# Exits 0 only if the renderer writes correct WAV files and logs.
+# exits 0 only if poem-beeper round-trips a poem through a WAV and random text,
+# and a copy with a broken decoder is caught.
 set -eu
 here=$(cd "$(dirname "$0")" && pwd)
-tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
-fail() { echo "FAIL: $*" >&2; exit 1; }
-beeper() { python3 -I "$here/beeper.py" "$@"; }
+exec python3 -I - "$here" <<'PY'
+import importlib.util, os, random, re, string, subprocess, sys, tempfile
 
-# 1. the shipped poem renders; WAV length and log lines match the score
-beeper "$here/poem.txt" "$tmp/poem.wav" > "$tmp/poem.log" || fail 'poem.txt did not render'
-python3 -I - "$here/poem.txt" "$tmp/poem.wav" "$tmp/poem.log" <<'EOF' || fail 'poem checks'
-import re, sys, wave
-poem, wav_path, log_path = sys.argv[1:4]
-tempo, frames, notes = 120.0, 0, 0
-for raw in open(poem):
-    code = raw.split(';', 1)[0].split()
-    if not code:
-        continue
-    if code[0] == 'tempo':
-        tempo = float(code[1])
-        continue
-    assert len(code) == 3, code
-    beat = 60.0 / tempo
-    frames += round(float(code[1]) * beat * 8000) + round(float(code[2]) * beat * 8000)
-    notes += 1
-w = wave.open(wav_path)
-assert (w.getnchannels(), w.getsampwidth(), w.getframerate()) == (1, 1, 8000), 'format'
-assert w.getnframes() == frames, (w.getnframes(), frames)
-log_lines = open(log_path).read().splitlines()
-assert len([l for l in log_lines if re.match(r' *[0-9]+ ', l)]) == notes, 'log count'
-assert any('a frog sits' in l for l in log_lines), 'verse missing from log'
-assert notes >= 10, notes
-print(f'poem ok: {notes} notes, {frames} frames')
-EOF
+here = sys.argv[1]
+pb_path = os.path.join(here, "poem-beeper.py")
+poem_path = os.path.join(here, "poem.txt")
 
-# 2. A4 for one second is 440 Hz: about 880 level changes in the sample stream
-printf 'tempo 60\nA4 1 0\n' > "$tmp/a4.txt"
-beeper "$tmp/a4.txt" "$tmp/a4.wav" > /dev/null || fail 'a4 did not render'
-python3 -I - "$tmp/a4.wav" <<'EOF' || fail 'a4 frequency'
-import sys, wave
-w = wave.open(sys.argv[1])
-data = w.readframes(w.getnframes())
-changes = sum(1 for a, b in zip(data, data[1:]) if (a >= 128) != (b >= 128))
-assert w.getnframes() == 8000, w.getnframes()
-assert 870 <= changes <= 890, changes
-EOF
 
-# 3. a silent note plus a rest is pure silence of the right length
-printf 'tempo 60\n- 0.5 0.5\n' > "$tmp/rest.txt"
-beeper "$tmp/rest.txt" "$tmp/rest.wav" > /dev/null || fail 'rest did not render'
-python3 -I -c '
-import sys, wave
-w = wave.open(sys.argv[1])
-d = w.readframes(w.getnframes())
-assert w.getnframes() == 8000 and set(d) == {128}, "not silent"
-' "$tmp/rest.wav" || fail 'silence'
+def load(path, name):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
-# 4. a bad note is refused, and the error names it
-printf 'tempo 60\nH9 1 0\n' > "$tmp/bad.txt"
-if beeper "$tmp/bad.txt" "$tmp/bad.wav" > /dev/null 2> "$tmp/err"; then fail 'bad note accepted'; fi
-grep -q 'H9' "$tmp/err" || fail 'error does not name the bad note'
 
-# 5. same input, same bytes
-beeper "$here/poem.txt" "$tmp/again.wav" > /dev/null
-cmp -s "$tmp/poem.wav" "$tmp/again.wav" || fail 'output not deterministic'
+def norm(s):
+    return re.sub(r"[^a-z0-9]", " ", s.lower())
 
-echo 'PASS'
+
+def through_wav(mod, text, d):
+    wav = os.path.join(d, "t.wav")
+    mod.write_wav(wav, mod.encode_text(text))
+    return mod.decode_samples(mod.read_wav(wav))
+
+
+pb = load(pb_path, "pb")
+run = [sys.executable, "-I", pb_path]
+
+# 1. CLI round trip on the poem
+with tempfile.TemporaryDirectory() as d:
+    wav = os.path.join(d, "poem.wav")
+    r = subprocess.run(run + ["encode", poem_path, wav])
+    assert r.returncode == 0, "encode exit %d" % r.returncode
+    r = subprocess.run(run + ["decode", wav], capture_output=True, text=True)
+    assert r.returncode == 0, "decode exit %d" % r.returncode
+    got = r.stdout[:-1] if r.stdout.endswith("\n") else r.stdout
+    want = norm(open(poem_path, encoding="utf-8").read())
+    assert got == want, "poem mismatch:\n%r\n%r" % (got, want)
+    print("ok cli poem round trip,", len(want), "notes")
+
+# 2. random text through the WAV path
+rng = random.Random(15)
+alpha = string.ascii_letters + string.digits + " .,;!?\n"
+for _ in range(300):
+    s = "".join(rng.choice(alpha) for _ in range(rng.randint(1, 120)))
+    with tempfile.TemporaryDirectory() as d:
+        got = through_wav(pb, s, d)
+    assert got == norm(s), "random mismatch: %r -> %r" % (s, got)
+print("ok 300 random strings through wav")
+
+# 3. a copy with a broken decoder must not round-trip
+src = open(pb_path, encoding="utf-8").read()
+bad_src = src.replace(
+    "i = round((t - 0.2 * BASE_HZ) / (0.2 * STEP_HZ))",
+    "i = round((t - 0.2 * BASE_HZ) / (0.2 * (STEP_HZ + 1)))")
+assert bad_src != src, "sabotage did not apply"
+text = "abcdefghijklmnopqrstuvwxyz0123456789"
+with tempfile.TemporaryDirectory() as d:
+    bad = os.path.join(d, "bad.py")
+    with open(bad, "w", encoding="utf-8") as f:
+        f.write(bad_src)
+    got = through_wav(load(bad, "bad"), text, d)
+    assert got != norm(text), "sabotaged decoder was not caught"
+print("ok sabotaged decoder caught")
+print("PASS")
+PY

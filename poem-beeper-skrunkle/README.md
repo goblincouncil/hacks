@@ -1,44 +1,26 @@
 # poem-beeper
 
-A stdlib Python script that turns a short poem into a square-wave tune. You write the poem as notes with lengths, it writes an 8-bit mono WAV file, and it prints the poem next to each note in the log.
+Turns a plain text file into a WAV file of beeps. Each letter and digit is one short square-wave note at its own pitch. Everything else is a rest. The decoder listens to the WAV and prints the letters back.
 
-## Run it
+## Run
 
-    python3 beeper.py poem.txt out.wav
+    python3 poem-beeper.py encode poem.txt poem.wav
+    python3 poem-beeper.py decode poem.wav
 
-This writes `out.wav` (8 kHz, 8-bit, mono) and prints one log line per note:
-
-        3 C4    0.5 beats   261.6 Hz rest 0 | a frog sits on the pond and hums
-
-To check the outputs:
+Decode prints the text in lowercase, with every character outside a-z and 0-9 turned into a space. Python 3 standard library only.
 
     sh check.sh
 
-It prints `PASS` and exits 0 when everything works.
-
-## The language
-
-One note per line:
-
-    NOTE BEATS REST
-
-- `NOTE` is a letter A-G, optional `#` or `b`, then an octave number, such as `C4`, `F#5`, `Bb3`. Use `-` for a silent note.
-- `BEATS` is how long the note sounds, in beats.
-- `REST` is the silence after it, in beats.
-- `tempo N` sets beats per minute. Default is 120.
-- `;` starts a comment. The most recent comment is the verse shown in the log.
+runs the tests.
 
 ## How it works
 
-The script parses the score, turns each note into a frequency with the equal-tempered formula `440 * 2^((midi - 69) / 12)`, and writes samples. A square wave flips between two levels every half period, so the sample count per note comes from the beat length times the sample rate. Silence is the midpoint level, 128. The WAV is written with the standard `wave` module, so there are no dependencies.
+Each character gets 0.1 s of audio: 8-bit mono PCM at 8000 Hz. The letters a to z and the digits 0 to 9 map to 36 pitches, 220 Hz up to 920 Hz, 20 Hz apart. Any other character is 0.1 s of silence.
 
-The log is built from the same parse pass as the audio, so a line in the log always matches a note in the WAV.
+A square wave at f Hz changes level twice per cycle, so a note at f Hz makes 0.2 f level changes in 0.1 s. The decoder splits the samples into 0.1 s slots, counts the level changes in each slot, and picks the nearest pitch. A slot with fewer than 10 changes is a rest. The lowest note makes 44 changes, so the threshold sits well clear of it.
 
-## Files
+The text is a string of notes, so the length is fixed: one character is one tenth of a second. A 139-character poem is 13.9 s.
 
-- `beeper.py` the renderer
-- `poem.txt` the sample poem, 15 notes
-- `check.sh` the test
-- `LOG.md` the build log
+Limits: uppercase is folded to lowercase, punctuation and newlines become rests, and there is no timing or pitch information beyond the letter.
 
-MIT License
+MIT licensed.

@@ -64,5 +64,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [roman-sed-skrunkle](roman-sed-skrunkle/) | skrunkle | Adds two Roman numerals using only sed. |
 | [luhn-awk](luhn-awk/) | dennis | A Luhn checksum validator and check-digit generator in one awk script. |
 | [pietpaint](pietpaint/) | moth | Paint any text as a Piet program, then run the painting to get the text back. |
+| [sudoku-awk-gorp](sudoku-awk-gorp/) | gorp | A backtracking sudoku solver in one awk script. |
+| [poem-beeper-skrunkle](poem-beeper-skrunkle/) | skrunkle | Turns a plain text file into a WAV file of beeps. |
 
 MIT licensed, see LICENSE.
