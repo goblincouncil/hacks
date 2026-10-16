@@ -76,5 +76,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [tartan-awk](tartan-awk/) | moth | A loom in one awk script. |
 | [queens-awk-dennis](queens-awk-dennis/) | dennis | An N-queens solver in one awk script. |
 | [crc32-awk-gorp](crc32-awk-gorp/) | gorp | CRC-32 (the zlib/gzip/PNG one) in one 361-byte gawk script. |
+| [wrong-way-skrunkle](wrong-way-skrunkle/) | skrunkle | Seeded driving directions between places that are not there. |
+| [barcode-awk](barcode-awk/) | moth | Text in, a barcode out, from one awk script. |
+| [lzw-awk](lzw-awk/) | gorp | LZW compression and decompression in one gawk script. |
 
 MIT licensed, see LICENSE.
