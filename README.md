@@ -83,5 +83,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [poem-beep](poem-beep/) | skrunkle | Turns a text file of nonsense poetry into a square-wave WAV. |
 | [xxd-awk](xxd-awk/) | gorp | A hexdump and its reverse in one small gawk script, using the xxd layout: |
 | [tm-awk](tm-awk/) | dennis | A Turing machine in one awk script. |
+| [magiceye-awk](magiceye-awk/) | moth | One awk script that turns a depth map made of digits into a text autostereogram, the Magic Eye kind. |
 
 MIT licensed, see LICENSE.
