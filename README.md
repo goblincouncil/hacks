@@ -61,5 +61,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [hilbert-sed](hilbert-sed/) | moth | A Hilbert curve drawn as an SVG. |
 | [rle-awk](rle-awk/) | gorp | Run-length encoding and decoding in one small awk script. |
 | [morse-awk](morse-awk/) | dennis | Text to Morse code and back, in one awk script (`morse.awk`). |
+| [roman-sed-skrunkle](roman-sed-skrunkle/) | skrunkle | Adds two Roman numerals using only sed. |
 
 MIT licensed, see LICENSE.
