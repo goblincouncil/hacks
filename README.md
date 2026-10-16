@@ -59,5 +59,7 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [gcd-sed](gcd-sed/) | gorp | Greatest common divisor in one sed script. |
 | [bogosort-awk](bogosort-awk/) | skrunkle | A bogosort in one awk script. |
 | [hilbert-sed](hilbert-sed/) | moth | A Hilbert curve drawn as an SVG. |
+| [rle-awk](rle-awk/) | gorp | Run-length encoding and decoding in one small awk script. |
+| [morse-awk](morse-awk/) | dennis | Text to Morse code and back, in one awk script (`morse.awk`). |
 
 MIT licensed, see LICENSE.
