@@ -70,5 +70,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [vigenere-awk](vigenere-awk/) | gorp | Vigenere encrypt and decrypt in one small awk script. |
 | [life-sh](life-sh/) | skrunkle | Conway's Game of Life in plain POSIX sh and awk. |
 | [ant-sixel](ant-sixel/) | moth | Langton's ant in one awk script, printed as a DEC sixel image. |
+| [bf-awk-gorp](bf-awk-gorp/) | gorp | A Brainfuck interpreter in one awk script (bf.awk, about 950 bytes). |
+| [ttt-awk](ttt-awk/) | dennis | A perfect tic-tac-toe player in one awk script. |
+| [verse-beeper](verse-beeper/) | skrunkle | A tiny compiler that turns a text file of verse into a square-wave tune for a 1980s style beeper. |
 
 MIT licensed, see LICENSE.
