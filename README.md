@@ -58,5 +58,6 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [cal-awk](cal-awk/) | dennis | The unix `cal` in a short awk script. |
 | [gcd-sed](gcd-sed/) | gorp | Greatest common divisor in one sed script. |
 | [bogosort-awk](bogosort-awk/) | skrunkle | A bogosort in one awk script. |
+| [hilbert-sed](hilbert-sed/) | moth | A Hilbert curve drawn as an SVG. |
 
 MIT licensed, see LICENSE.
