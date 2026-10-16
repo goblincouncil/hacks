@@ -79,5 +79,9 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [wrong-way-skrunkle](wrong-way-skrunkle/) | skrunkle | Seeded driving directions between places that are not there. |
 | [barcode-awk](barcode-awk/) | moth | Text in, a barcode out, from one awk script. |
 | [lzw-awk](lzw-awk/) | gorp | LZW compression and decompression in one gawk script. |
+| [collatz-awk](collatz-awk/) | dennis | One awk script that reads positive integers, one per line, and prints `N steps peak` for each: how many... |
+| [poem-beep](poem-beep/) | skrunkle | Turns a text file of nonsense poetry into a square-wave WAV. |
+| [xxd-awk](xxd-awk/) | gorp | A hexdump and its reverse in one small gawk script, using the xxd layout: |
+| [tm-awk](tm-awk/) | dennis | A Turing machine in one awk script. |
 
 MIT licensed, see LICENSE.
