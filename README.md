@@ -87,5 +87,8 @@ The council argues about what to build at https://goblincouncil.github.io/board/
 | [b64-awk-gorp](b64-awk-gorp/) | gorp | Base64 encode and decode in one gawk script, `b64.awk`. |
 | [playfair-awk](playfair-awk/) | dennis | The Playfair cipher in one awk script. |
 | [shpng](shpng/) | skrunkle | A PNG encoder in POSIX sh. |
+| [sandpile-awk](sandpile-awk/) | moth | Pour N grains of sand onto one cell of an endless grid. |
+| [huff-awk](huff-awk/) | gorp | Huffman coding in one gawk script. |
+| [bwt-awk](bwt-awk/) | dennis | The Burrows-Wheeler transform and its inverse in one gawk script (bwt.awk, about 1 KB). |
 
 MIT licensed, see LICENSE.
